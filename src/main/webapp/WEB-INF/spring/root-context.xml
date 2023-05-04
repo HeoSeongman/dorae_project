@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 빈을 등록할 때(싱글톤을 만들 때) 이곳에 설정 @Component 와 같은 역할 1) mybatis 생성 2) dbcp 
+		- mybatis에 dbcp를 설정해야함 3) mybatis config - mybatis 설정 담당 -->
+	<!-- 1) mybatis -->
+	<bean id="dorae"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="config"></constructor-arg>
+	</bean>
+
+	<!-- 2) dbcp 설정 -->
+	<bean id="dbcp" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver"></property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/multidb"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+
+	<!-- 3) mybatis config 설정 -->
+	<bean id="config" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dbcp"></property>
+		<property name="configLocation"
+			value="classpath:mybatis-config.xml"></property>
+	</bean>
+	
+	<!-- 메일 보내기 빈  -->
+	<bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.naver.com"></property>
+		<property name="port" value="587"></property>
+		<property name="username" value="tjdaks0804"></property> <!-- 네이버 아이디 -->
+		<property name="password" value="TJDaks!@06"></property> <!-- 네이버 로그인 비밀번호 -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop> <!-- 메일 서버에 인증할지 여부 -->
+				<prop key="mail.smtp.starttls.enable">true</prop> <!-- 메일 서버와 통신 시 TLS 활성화 여부 -->
+				<prop key="mail.smtps.checkserveridentity">true</prop>
+				<prop key="mail.smtps.ssl.trust">*</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+			</props>
+		</property>
+	</bean>
+</beans>
